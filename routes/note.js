@@ -20,13 +20,27 @@ router.get('/all', function (req, res) {
 	res.send("Sending all notes.");
 });
 
-// creating note 
+// creating note
 router.post('/', function (req, res) {
+	let noteTitle = req.query.noteTitle;
 	let noteBody = req.query.noteBody;
 
-	if (noteBody) {
-		let noteId;
-		res.send(noteBody);
+	if (noteTitle && noteBody) {
+		let createPromise = new note_factory().createNote(
+			noteTitle,
+			noteBody);
+		createPromise.then(result => {
+			res.send(result);
+		})
+		.catch(function(err) {
+			console.log("caught err " + err);
+			throw err;
+		});
+		// res.send(noteBody);
+	}
+	else {
+		console.log(req.query);
+		res.status(405).send("Requires title and body.")
 	}
 });
 
@@ -36,7 +50,7 @@ router.route(`/:noteId(${ID_PATTERN})`)
 	let noteId = req.params.noteId;
 
 	if (noteId) {	
-		let notePromise = new note_factory().getNote(noteId); 
+		let notePromise = new note_factory().getNote(noteId);
 		notePromise.then((result) => {
 			res.send(result);
 		})

@@ -5,7 +5,7 @@ CREATE TABLE note
   content		    VARCHAR(255) NOT NULL,
   type          ENUM('text') NOT NULL DEFAULT 'text',
   user_id	      INT unsigned NOT NULL,
-  date_created  INT unsigned NOT NULL, # MS since epoch
+  date_created  BIGINT(255) unsigned NOT NULL, # MS since epoch
   PRIMARY KEY	(id)
 );
 
@@ -26,4 +26,4 @@ insert into user (name, email)
 values ('admin', null);
 
 insert into note (title, content, user_id, date_created) 
-values ("BennyTitle", "bennyContent", 1, 5);
+values ("initTitle", "initContent", 1, 5);

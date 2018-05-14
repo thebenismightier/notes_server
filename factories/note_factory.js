@@ -1,14 +1,5 @@
-const mysql = require('mysql');
-
-// todo replace this with some txman
-const con = mysql.createConnection({
-  host: "localhost",
-  user: "notesUser",
-  password: "admin",
-  database: "notes_db"
-});
-
-
+const db = require('../db');
+const con = db.getConnection();
 
 class Note_Factory {
 	constructor() {
@@ -21,12 +12,12 @@ class Note_Factory {
 			con.query(sql, [id], function(err, result) {
 				if (err) {
 					reject(err);
-				} 
+				}
 				else {
 					resolve(JSON.stringify(result[0]));
 				}
+				// con.end();
 			});
-			con.end();
 		});
 	}
 
@@ -39,12 +30,27 @@ class Note_Factory {
 			throw "Title and content required.";
 		}
 
-		let result = { 
-			title: title,
-			content: content,
+		return new Promise((resolve, reject) => {
+			let date_created = new Date().getTime();
+			let sql =
+				"insert into note (title, content, user_id, date_created) " +
+				"values (?, ?, ?, ?)";
+			console.log("date_created: " + date_created);
 
-		}
-		return result;
+			con.connect(function(err){});
+			con.query(sql, [title, content, 1, date_created], function(err, result) {
+				if (err) {
+					console.log("there was err " + err);
+					reject(err);
+				}
+				else {
+					let jsonResult = {
+						id: result.insertId
+					};
+					resolve(jsonResult);
+				}
+			});
+		});
 	}
 }
 
